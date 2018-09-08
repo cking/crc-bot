@@ -1,35 +1,23 @@
-'use strict';
-var logger = require('winston');
-var co = require('co');
-var promisify = require('promisify-node');
-var fs = promisify('fs');
-var path = require('path');
+const logger = require('../app/logger')
+var fs = require('fs')
+var path = require('path')
 
+exports.init = function init(app) {
+  return async function init() {
+    var files = await fs.readdir(__dirname)
 
-function init(app) {
+    files
+      .filter(file => file.indexOf('.') !== 0 && file !== 'index.js')
+      .forEach(async file => {
+        const filePath = path.join(__dirname, file)
+        logger.debug('loading plugin from: %s', filePath)
 
-    return co(function *init() {
-        var files = yield fs.readdir(__dirname);
-
-        var plugins = files.filter(function (file) {
-            return (file.indexOf('.') !== 0) && (file !== 'index.js');
-        });
-        var file;
-        var filePath;
-        var plugin;
-        while(file = plugins.shift()) {
-            filePath = path.join(__dirname, file);
-            logger.debug('loading plugin from: %s', filePath);
-            try {
-                plugin = require(filePath);
-                yield plugin.init(app);
-            } catch (err) {
-                logger.error('failed to load plugin: ', err);
-            }
-            
+        try {
+          const plugin = require(filePath)
+          await plugin.init(app)
+        } catch (err) {
+          logger.error('failed to load plugin: ', err)
         }
-
-    });
+      })
+  }
 }
-
-module.exports.init = init;
