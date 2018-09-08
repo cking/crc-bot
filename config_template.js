@@ -1,93 +1,69 @@
-'use strict';
+const fs = require('fs')
+const path = require('path')
 
-var fs = require('fs');
-
-module.exports = {
-
-    discord: {
-        token: "DISCORD_TOKEN",
-        adminRole: "admin",
-        defaultGuild: "",
-        playing: "hide and seek",
-        // set 'raw' to 'true' to log all events from discord
-        raw: false
+const config = {
+  discord: {
+    token: 'DISCORD_TOKEN',
+    adminRole: 'admin',
+    defaultGuild: '',
+    playing: 'hide and seek',
+    // set 'raw' to 'true' to log all events from discord
+    raw: false
+  },
+  throttle: {
+    player_lfg: {
+      maxTokens: 1,
+      tokenInterval: 86400
     },
-    role: {
-        "casters": "Casters",
-        "caster": "Casters",
-        "mage": "Casters",
-        "smn": "Casters",
-        "blm": "Casters",
-        "rdm": "Casters",
-        "ranged dps": "Ranged DPS",
-        "ranged": "Ranged DPS",
-        "rangeds": "Ranged DPS",
-        "mch": "Ranged DPS",
-        "brd": "Ranged DPS",
-        "melee dps": "Melee DPS",
-        "melee": "Melee DPS",
-        "melees": "Melee DPS",
-        "mnk": "Melee DPS",
-        "nin": "Melee DPS",
-        "sam": "Melee DPS",
-        "drg": "Melee DPS",
-        "healers": "Healers",
-        "healer": "Healers",
-        "whm": "Healers",
-        "sch": "Healers",
-        "ast": "Healers",
-        "tanks": "Tanks",
-        "pld": "Tanks",
-        "drk": "Tanks",
-        "war": "Tanks",
-        "tank": "Tanks"
-    },
-    throttle: {
-        "player_lfg": {
-            maxTokens: 1,
-            tokenInterval: 86400
-        },
-        "player_lfm": {
-            maxTokens: 1,
-            tokenInterval: 86400
-        },
-    },
-    monitor: {
-        output: "monitor",
-        events: [
-            "message", "messageDelete", "messageUpdate",
-            "guildMemberAdd", "guildMemberRemove"
-        ]
-    },
-    welcome: {
-        message: fs.readFileSync("welcome.sample.txt", "utf8")
-    },
+    player_lfm: {
+      maxTokens: 1,
+      tokenInterval: 86400
+    }
+  },
+  monitor: {
+    output: 'monitor',
+    events: [
+      'message',
+      'messageDelete',
+      'messageUpdate',
+      'guildMemberAdd',
+      'guildMemberRemove'
+    ]
+  },
+  welcome: {
+    message: fs.readFileSync('welcome.sample.txt', 'utf8')
+  },
 
-    purge: {
-        /* cron syntax
-         *    *    *    *    *
-         ┬    ┬    ┬    ┬    ┬
-         │    │    │    │    |
-         │    │    │    │    └ day of week (0 - 7) (0 or 7 is Sun)
-         │    │    │    └───── month (1 - 12)
-         │    │    └────────── day of month (1 - 31)
-         │    └─────────────── hour (0 - 23)
-         └──────────────────── minute (0 - 59)
-        */
-        "partyfinder": "0 4 * * *"
-    },
+  purge: {
+    /* cron syntax
+             *    *    *    *    *
+             ┬    ┬    ┬    ┬    ┬
+             │    │    │    │    |
+             │    │    │    │    └ day of week (0 - 7) (0 or 7 is Sun)
+             │    │    │    └───── month (1 - 12)
+             │    │    └────────── day of month (1 - 31)
+             │    └─────────────── hour (0 - 23)
+             └──────────────────── minute (0 - 59)
+            */
+    partyfinder: '0 4 * * *'
+  },
 
-    accuracy: {
+  accuracy: {},
 
-    },
+  help: {},
 
-    help: {
+  clear: {},
 
-    },
+  commandPrefix: '.'
+}
 
-    clear: {
-
-    },
-
-    commandPrefix: "."
-};
+fs.readdirSync(path.join(__dirname, 'config')).forEach(f => {
+  const base = path.basename(f, path.extname(f))
+  try {
+    const mod = require(path.join(__dirname, 'config', f))
+    config[base] = mod
+  } catch (err) {
+    // ignore unsupported
+  }
+})
+module.exports = config
