@@ -1,6 +1,5 @@
 const logger = require('../app/logger')
-const Promise = require('bluebird')
-const fs = Promise.promisifyAll(require('fs'))
+const fs = require('fs-extra')
 const path = require('path')
 
 exports.init = async function init(app) {
