@@ -6,10 +6,9 @@ const co = require('co')
 const app = {}
 
 const config = (app.config = require('./config'))
-config.pkg = require('./package.json')
 
-logger.info('node version v' + process.version)
-logger.info('discord.js v' + Discord.version)
+logger.info('node version ' + process.version)
+logger.info('discord.js v' + client.Discord.version)
 logger.info('bot started, v' + config.pkg.version)
 
 const commands = {}
@@ -18,7 +17,9 @@ client.once('ready', function() {
   if (config.discord.playing) {
     client.user.setGame(config.discord.playing)
   }
+
   logger.info('%s is ready!', client.user.username)
+
   logger.verbose(
     'Listening to %s channels on %s servers',
     client.channels.array().length,
@@ -134,4 +135,4 @@ async function main() {
   logger.info('Logged into discord with token: ', token)
 }
 
-main().catch(error => logger.error('unexpected error occured!', { error }))
+main().catch(error => logger.error('unexpected error occured! ' + error))
