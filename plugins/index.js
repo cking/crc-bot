@@ -3,7 +3,7 @@ const fs = require('fs-extra')
 const path = require('path')
 
 exports.init = async function init(app) {
-  let files = await fs.readdirAsync(__dirname)
+  let files = await fs.readdir(__dirname)
 
   files
     .filter(file => file.indexOf('.') !== 0 && file !== 'index.js')
