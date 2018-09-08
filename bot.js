@@ -1,15 +1,9 @@
-const util = require('util')
-const logger = require('winston')
-logger.level = 'debug'
-// fudge - by default winston disables timestamps on the console
-logger.remove(logger.transports.Console)
-logger.add(logger.transports.Console, { prettyPrint: true, timestamp: true })
+const logger = require('./app/logger')
+const client = require('./app/discord')
 
 const Warning = require('./lib/warning')
 const co = require('co')
 const app = {}
-
-const Discord = (app.discordjs = require('discord.js'))
 
 const config = (app.config = require('./config'))
 config.pkg = require('./package.json')
@@ -18,37 +12,7 @@ logger.info('node version v' + process.version)
 logger.info('discord.js v' + Discord.version)
 logger.info('bot started, v' + config.pkg.version)
 
-const client = (app.client = new Discord.Client())
-
 const commands = {}
-
-// event listeners
-client.on('error', function(msg) {
-  logger.error(msg)
-  // should we throw here and crash?
-})
-
-client.on('warn', function(msg) {
-  logger.warn(msg)
-})
-
-client.on('debug', function(msg) {
-  logger.debug(msg)
-})
-
-client.on('disconnect', function(e) {
-  logger.debug('Disconnected from discord: ' + util.inspect(e))
-  // workaround discord.js not re-connecting after a clean disconnect
-  if (e.code === 1000) {
-    client.destroy().then(client.login.bind(client))
-  }
-})
-
-if (config.discord.raw) {
-  client.on('raw', function(data) {
-    logger.debug('RAW: ', data)
-  })
-}
 
 client.once('ready', function() {
   if (config.discord.playing) {
