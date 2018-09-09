@@ -3,7 +3,10 @@ const client = require('./app/discord')
 
 const Warning = require('./lib/warning')
 const co = require('co')
-const app = {}
+const app = {
+  client,
+  logger
+}
 
 const config = (app.config = require('./config'))
 
@@ -15,7 +18,7 @@ const commands = {}
 
 client.once('ready', function() {
   if (config.discord.playing) {
-    client.user.setGame(config.discord.playing)
+    client.user.setActivity(config.discord.playing, { type: 'PLAYING' })
   }
 
   logger.info('%s is ready!', client.user.username)
@@ -27,13 +30,11 @@ client.once('ready', function() {
   )
 
   if (config.discord.defaultGuild) {
+    const g = client.guilds.find('name', config.discord.defaultGuild)
+
     // configure the default servers
-    if (
-      (app.defaultGuild = client.guilds.find(
-        'name',
-        config.discord.defaultGuild
-      ))
-    ) {
+    if (g) {
+      app.defaultGuild = g
       logger.info(
         'setting default guild to: %s [%s]',
         app.defaultGuild.name,
@@ -47,14 +48,14 @@ client.once('ready', function() {
     }
   }
 
-  client.on('messageUpdate', function(msg0, msg1) {
-    parseCommand(msg1)
+  client.on('messageUpdate', function(oldMsg, newMsg) {
+    parseCommand(newMsg)
   })
 
   client.on('message', parseCommand)
 })
 
-function addCommand(cmd) {
+app.addCommand = function addCommand(cmd) {
   logger.info('adding command %s', cmd.name)
   commands[cmd.name] = cmd
 
@@ -66,8 +67,6 @@ function addCommand(cmd) {
     })
   }
 }
-
-app.addCommand = addCommand
 
 function parseCommand(msg) {
   return co(function*() {
