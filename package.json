@@ -4,7 +4,8 @@
   "description": "Discord bot for Chaos Raiding Central",
   "main": "bot.js",
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha --bail"
+    "test": "mocha --bail",
+    "start": "node ."
   },
   "keywords": [
     "discord",
@@ -20,6 +21,8 @@
     "co": "^4.6.0",
     "cron-parser": "^2.4.0",
     "discord.js": "^11.0.0",
+    "fs-extra": "^7.0.0",
+    "ioredis": "^4.0.0",
     "promisify-node": "^0.4.0",
     "winston": "^2.3.0"
   },

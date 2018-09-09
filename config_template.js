@@ -10,6 +10,11 @@ const config = {
     // set 'raw' to 'true' to log all events from discord
     raw: false
   },
+  redis: {
+    host: 'localhost',
+    port: 6379,
+    db: 0 // dbs are numeric
+  },
   throttle: {
     player_lfg: {
       maxTokens: 1,
